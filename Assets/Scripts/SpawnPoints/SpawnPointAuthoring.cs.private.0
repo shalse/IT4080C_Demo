@@ -1,0 +1,22 @@
+using Unity.Entities;
+using UnityEngine;
+
+namespace IT4080C
+{
+
+    public class SpawnPointAuthoring : MonoBehaviour
+    {
+        public class Baker : Baker<SpawnPointAuthoring>
+        {
+            public override void Bake( SpawnPointAuthoring authouring)
+            {
+                Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+                AddComponent(entity, new SpawnPoint());
+            }
+        }
+    }
+    public struct SpawnPoint : IComponentData
+    {
+
+    }
+}
