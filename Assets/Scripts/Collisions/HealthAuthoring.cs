@@ -1,16 +1,20 @@
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Properties;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
+using Unity.NetCode;
 
 namespace IT4080C
 {
     /// <summary>
     /// Flag component to mark an entity as a Bullet.
     /// </summary>
+    [GhostComponent]
     public struct Health : IComponentData
     {
-        public float currentHealth;
+        [GhostField] public float currentHealth;
     }
 
     /// <summary>
@@ -19,6 +23,7 @@ namespace IT4080C
     [DisallowMultipleComponent]
     public class HealthAuthoring : MonoBehaviour
     {
+
         static class UIElementNames
         {
             public const string HpBarName = "TestText";
@@ -37,5 +42,7 @@ namespace IT4080C
             }
 
         }
+
+
     }
 }

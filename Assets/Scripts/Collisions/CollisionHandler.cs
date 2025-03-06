@@ -20,8 +20,8 @@ partial struct CollisionHandler : ISystem
     {
         CollisionSimulationJob simulationJob = new CollisionSimulationJob
         {
-            PlayerHealthLookup = SystemAPI.GetComponentLookup<Health>(),
-            PlayerHpBarLookup = SystemAPI.GetComponentLookup<HPBar>(),
+            PlayerHealthLookup = SystemAPI.GetComponentLookup<HealthComponent>(),
+            BulletLookup = SystemAPI.GetComponentLookup<Bullet>(),
         };
         state.Dependency = simulationJob.Schedule(
             SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
@@ -40,27 +40,32 @@ partial struct CollisionHandler : ISystem
 [BurstCompile]
 public partial struct CollisionSimulationJob : ICollisionEventsJob
 {
-    public ComponentLookup<Health> PlayerHealthLookup;
-    public ComponentLookup<HPBar> PlayerHpBarLookup;
-    
+    public ComponentLookup<HealthComponent> PlayerHealthLookup;
+    public ComponentLookup<Bullet> BulletLookup;
+
     public void Execute(CollisionEvent collisionEvent)
     {
-        if(PlayerHealthLookup.TryGetComponent(collisionEvent.EntityB, out Health health))
+        if(PlayerHealthLookup.TryGetComponent(collisionEvent.EntityB, out HealthComponent health))
         {
-            health.currentHealth -= 1f;
-            PlayerHealthLookup[collisionEvent.EntityB] = health;
-            Debug.Log("Owww My health is: "+health.currentHealth);
-
-    
-       
-            if (PlayerHpBarLookup.TryGetComponent(collisionEvent.EntityB, out HPBar hpBar))
+            if (BulletLookup.TryGetComponent(collisionEvent.EntityA, out Bullet bullet))
             {
-                hpBar.currentHP -= 1f;
-                PlayerHpBarLookup[collisionEvent.EntityB] = hpBar;
-                
-                Debug.Log("HP Bar Updated to: " + health.currentHealth);
-                
+                if (bullet.hasHit != 1 && bullet.hittable)
+                {
+
+                    health.CurrentHealth -= 1f;
+                    PlayerHealthLookup[collisionEvent.EntityB] = health;
+                    Debug.Log("Owww My health is: " + health.CurrentHealth);
+
+
+                    Debug.LogWarning("Collision Bullet Part ");
+                    bullet.hasHit = 1;
+                    bullet.timer = 0;
+                    bullet.hittable = false;
+                    BulletLookup[collisionEvent.EntityA] = bullet;
+                }
             }
+
         }
+       
     }
 }

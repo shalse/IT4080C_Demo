@@ -40,9 +40,13 @@ namespace IT4080C
                 if(state.World.IsServer())
                 {
                     bullet.ValueRW.timer -= SystemAPI.Time.DeltaTime;
-                    if(bullet.ValueRW.timer <= 0f )
+                    if (bullet.ValueRW.timer <= 0f)
                     {
                         ecb.DestroyEntity(entity);
+                    }
+                    else if (bullet.ValueRW.timer <= 4f)
+                    {
+                        bullet.ValueRW.hittable = true;
                     }
                 }
             }

@@ -13,6 +13,7 @@ namespace IT4080C
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BulletSpawner>();
+            state.RequireForUpdate<NetworkTime>();
         }
 
         [BurstCompile]
@@ -21,6 +22,7 @@ namespace IT4080C
            var prefab = SystemAPI.GetSingleton<BulletSpawner>().Bullet;
 
             EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+            NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
             foreach ((
                 var playerInput,
@@ -31,6 +33,8 @@ namespace IT4080C
                 RefRO<LocalTransform>,
                 RefRO<GhostOwner>>().WithAll<Simulate>())
             {
+                if (networkTime.IsFirstTimeFullyPredictingTick)
+                {
                     if (playerInput.ValueRO.shoot.IsSet)
                     {
                         Debug.LogWarning("Shoot Input");
@@ -44,6 +48,7 @@ namespace IT4080C
                         ecb.SetComponent(bulletEntity, LocalTransform.FromPositionRotation(localTransform.ValueRO.Position + forwardDir, localTransform.ValueRO.Rotation));
                         ecb.SetComponent(bulletEntity, new GhostOwner { NetworkId = ghostOwner.ValueRO.NetworkId });
                     }
+                }
             }
             ecb.Playback(state.EntityManager);
         }
