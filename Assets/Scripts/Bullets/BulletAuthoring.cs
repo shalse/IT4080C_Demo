@@ -9,6 +9,10 @@ namespace IT4080C
     public struct Bullet : IComponentData
     {
         public float timer;
+        public byte hasHit;
+        public bool hittable;
+        public float ownerNetworkID;
+        public float damageMult;
     }
 
     /// <summary>
@@ -24,7 +28,11 @@ namespace IT4080C
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent<Bullet>(entity, new Bullet
                 {
-                    timer = 5f
+                    timer = 5f,
+                    hasHit = 0,
+                    hittable = false,
+                    ownerNetworkID = 999f,
+                    damageMult = 1f
                 });
             }
         }

@@ -28,6 +28,7 @@ namespace IT4080C
         public int Rotate;
 
         public InputEvent shoot;
+
     }
 
     /// <summary>
@@ -60,6 +61,7 @@ namespace IT4080C
         /// <param name="state">Raw entity system state, unused here.</param>
         public void OnUpdate(ref SystemState state)
         {
+          
 #if ENABLE_INPUT_SYSTEM
             var left = Keyboard.current.aKey.isPressed;
             var right = Keyboard.current.dKey.isPressed;
@@ -106,6 +108,7 @@ namespace IT4080C
                     playerInput.ValueRW.shoot = default;
                 }
 
+
             }
         }
     }
@@ -133,7 +136,7 @@ namespace IT4080C
             var rightCamOffset = 0;
 
             foreach (var (input, trans) in
-                     SystemAPI.Query<RefRO<CubeInput>, RefRW<LocalTransform>>()
+                     SystemAPI.Query<RefRW<CubeInput>, RefRW<LocalTransform>>()
                          .WithAll<Simulate>())
             {
                 //   var moveInput = new float2(input.ValueRO.Horizontal, input.ValueRO.Vertical);

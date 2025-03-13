@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -20,8 +21,11 @@ partial struct CollisionHandler : ISystem
     {
         CollisionSimulationJob simulationJob = new CollisionSimulationJob
         {
-            PlayerHealthLookup = SystemAPI.GetComponentLookup<Health>(),
-            PlayerHpBarLookup = SystemAPI.GetComponentLookup<HPBar>(),
+            PlayerHealthLookup = SystemAPI.GetComponentLookup<HealthComponent>(),
+            BulletLookup = SystemAPI.GetComponentLookup<Bullet>(),
+            HPBoxLookup = SystemAPI.GetComponentLookup<HPBox>(),
+            PowerBoxLookup = SystemAPI.GetComponentLookup<PowerBox>(),
+            PoweredUpComponentLookup = SystemAPI.GetComponentLookup<PoweredUpComponent>()
         };
         state.Dependency = simulationJob.Schedule(
             SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
@@ -40,27 +44,84 @@ partial struct CollisionHandler : ISystem
 [BurstCompile]
 public partial struct CollisionSimulationJob : ICollisionEventsJob
 {
-    public ComponentLookup<Health> PlayerHealthLookup;
-    public ComponentLookup<HPBar> PlayerHpBarLookup;
-    
+    public ComponentLookup<HealthComponent> PlayerHealthLookup;
+    public ComponentLookup<Bullet> BulletLookup;
+    public ComponentLookup<HPBox> HPBoxLookup;
+    public ComponentLookup<PowerBox> PowerBoxLookup;
+    public ComponentLookup<PoweredUpComponent> PoweredUpComponentLookup;
     public void Execute(CollisionEvent collisionEvent)
     {
-        if(PlayerHealthLookup.TryGetComponent(collisionEvent.EntityB, out Health health))
+        if(PlayerHealthLookup.TryGetComponent(collisionEvent.EntityB, out HealthComponent health))
         {
-            health.currentHealth -= 1f;
-            PlayerHealthLookup[collisionEvent.EntityB] = health;
-            Debug.Log("Owww My health is: "+health.currentHealth);
-
-    
-       
-            if (PlayerHpBarLookup.TryGetComponent(collisionEvent.EntityB, out HPBar hpBar))
+            if (BulletLookup.TryGetComponent(collisionEvent.EntityA, out Bullet bullet))
             {
-                hpBar.currentHP -= 1f;
-                PlayerHpBarLookup[collisionEvent.EntityB] = hpBar;
-                
-                Debug.Log("HP Bar Updated to: " + health.currentHealth);
-                
+                if (bullet.hasHit != 1 && bullet.hittable)
+                {
+                    if (bullet.ownerNetworkID != health.ownerNetworkID)
+                    {
+                        health.CurrentHealth -= 5f * bullet.damageMult;
+                        PlayerHealthLookup[collisionEvent.EntityB] = health;
+                        Debug.Log("I am #: " + health.ownerNetworkID);
+                        Debug.Log("Owww My health is: " + health.CurrentHealth);
+                        Debug.Log("I was hit by: " + bullet.ownerNetworkID);
+                        Debug.Log("DMG Mult: " + bullet.damageMult);
+
+                        bullet.hasHit = 1;
+                        bullet.timer = 0;
+                        bullet.hittable = false;
+                        BulletLookup[collisionEvent.EntityA] = bullet;
+                    }
+                }
             }
+            else if(HPBoxLookup.TryGetComponent(collisionEvent.EntityA, out HPBox hpBox))
+            {
+                float healthPickUpValue = 25f;
+                //doo health math
+                if (hpBox.hasbeenPickedUp != 1)
+                {
+                    if (health.CurrentHealth + healthPickUpValue >= health.MaxHealth)
+                    {
+                        Debug.LogWarning("Set to Max HP");
+                        health.CurrentHealth = health.MaxHealth;
+                    }
+                    else if (health.CurrentHealth + healthPickUpValue < health.MaxHealth)
+                    {
+                        Debug.LogWarning("Set to Curr HP +"+healthPickUpValue);
+                        health.CurrentHealth += healthPickUpValue;
+                    }
+                    else if (health.CurrentHealth <= 0)
+                    {
+                        Debug.Log("You dead");
+                        //do death scene
+                    }
+                    PlayerHealthLookup[collisionEvent.EntityB] = health;
+                    //doo stuff to HPBox
+                    hpBox.hasbeenPickedUp = 1;
+                    hpBox.destroy = true;
+                    //add me
+                    HPBoxLookup[collisionEvent.EntityA] = hpBox; 
+                }
+            }
+            else if (PowerBoxLookup.TryGetComponent(collisionEvent.EntityA, out PowerBox powerBox) && PoweredUpComponentLookup.TryGetComponent(collisionEvent.EntityB, out PoweredUpComponent powerUp))
+            {
+                if (powerBox.hasbeenPickedUp != 1)
+                {
+                    Debug.LogWarning("Unlimited POWER!!");
+                    //add mult to player damage
+                    powerUp.poweredUpMultiplier = 5f;
+                    PoweredUpComponentLookup[collisionEvent.EntityB] = powerUp; 
+
+                    //destroy power cube on pickup
+                    powerBox.hasbeenPickedUp = 1;
+                    powerBox.destroy = true;
+                    //add me
+                    PowerBoxLookup[collisionEvent.EntityA] = powerBox;
+                    
+                }
+              
+            }
+
         }
+       
     }
 }

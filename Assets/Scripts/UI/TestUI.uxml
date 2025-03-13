@@ -1,0 +1,4 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UI/HealthBar.uss?fileID=7433441132597879392&amp;guid=3d25abd39c1241f4f9ddbf2967205238&amp;type=3#HealthBar" />
+    <engine:ProgressBar value="22" title="my-progress" name="HealthBar" class="health-bar" style="background-color: rgba(255, 0, 0, 0); -unity-background-image-tint-color: rgb(255, 0, 0);" />
+</engine:UXML>
