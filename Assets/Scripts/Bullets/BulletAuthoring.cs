@@ -13,6 +13,8 @@ namespace IT4080C
         public bool hittable;
         public float ownerNetworkID;
         public float damageMult;
+        public float hitPlayerNetworkID;
+        internal bool killed;
     }
 
     /// <summary>
@@ -32,7 +34,9 @@ namespace IT4080C
                     hasHit = 0,
                     hittable = false,
                     ownerNetworkID = 999f,
-                    damageMult = 1f
+                    damageMult = 1f,
+                    hitPlayerNetworkID = 999f,
+                    killed = false
                 });
             }
         }

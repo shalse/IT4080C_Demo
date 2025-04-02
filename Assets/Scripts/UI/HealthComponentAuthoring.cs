@@ -9,6 +9,8 @@ public struct HealthComponent : IComponentData
     [GhostField] public float CurrentHealth;
     [GhostField] public float MaxHealth;
     [GhostField] public float ownerNetworkID;
+    [GhostField] public float kills;
+    [GhostField] public float deaths;
 }
 
 [DisallowMultipleComponent]
@@ -24,7 +26,9 @@ public class HealthComponentAuthoring : MonoBehaviour
             {
                 CurrentHealth = 100f,
                 MaxHealth = 100f,
-                ownerNetworkID = 999f
+                ownerNetworkID = 999f,
+                kills = 0,
+                deaths = 0,
             });
 
 

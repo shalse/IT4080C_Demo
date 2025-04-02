@@ -2,6 +2,7 @@ using IT4080C;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEditor;
@@ -59,7 +60,7 @@ public partial struct CollisionSimulationJob : ICollisionEventsJob
                 {
                     if (bullet.ownerNetworkID != health.ownerNetworkID)
                     {
-                        health.CurrentHealth -= 5f * bullet.damageMult;
+                        health.CurrentHealth -= 50f * bullet.damageMult;
                         PlayerHealthLookup[collisionEvent.EntityB] = health;
                         Debug.Log("I am #: " + health.ownerNetworkID);
                         Debug.Log("Owww My health is: " + health.CurrentHealth);
@@ -69,7 +70,9 @@ public partial struct CollisionSimulationJob : ICollisionEventsJob
                         bullet.hasHit = 1;
                         bullet.timer = 0;
                         bullet.hittable = false;
+                        bullet.hitPlayerNetworkID = health.ownerNetworkID;
                         BulletLookup[collisionEvent.EntityA] = bullet;
+
                     }
                 }
             }
@@ -92,7 +95,10 @@ public partial struct CollisionSimulationJob : ICollisionEventsJob
                     else if (health.CurrentHealth <= 0)
                     {
                         Debug.Log("You dead");
+
                         //do death scene
+                        bullet.killed = true; 
+                        
                     }
                     PlayerHealthLookup[collisionEvent.EntityB] = health;
                     //doo stuff to HPBox
