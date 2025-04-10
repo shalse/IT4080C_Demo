@@ -46,7 +46,7 @@ public class ScoreBoardUIManager : MonoBehaviour
             bindCell = BindKillsToCell,
             stretchable = true,
         });
-        //BuildMockUpDisplay();
+        BuildMockUpDisplay();
         scoreBoard.Rebuild();
 
         // Query for entities with HealthComponent (Ghost)
@@ -71,6 +71,7 @@ public class ScoreBoardUIManager : MonoBehaviour
         // Check if we have any Ghost entities
         if (ghostQuery == null)
         {
+            Debug.Log("GQuery is null");
             ghostQuery = entityManager.CreateEntityQuery(typeof(HealthComponent));
         }
         //get list of entities
@@ -116,16 +117,4 @@ public class ScoreBoardUIManager : MonoBehaviour
         label.text = "" + playerScore.kills;
     }
 }
-public class PlayerScore
-{
-    public string playerName;
-    public int kills;
-    public int deaths;
 
-    public PlayerScore(string pName, int kill, int death)
-    {
-        playerName = pName;
-        kills = kill;
-        deaths = death;
-    }
-}

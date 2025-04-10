@@ -44,7 +44,7 @@ namespace IT4080C
                     //add kills
                     if (bullet.ValueRO.hitPlayerNetworkID <= 5)
                     {
-                        List<HealthComponent> entities = new List<HealthComponent> ();
+                 
                         
                         foreach ((
                              RefRW<HealthComponent> healthComponent,
@@ -53,10 +53,14 @@ namespace IT4080C
                             RefRW<HealthComponent>>()
                             .WithEntityAccess().WithAll<Simulate>())
                         {
-                            
+                            if(bullet.ValueRO.killed)
+                            {
+                                Debug.Log("Bullet will kill");
+                            }
                             if (healthComponent.ValueRO.ownerNetworkID == bullet.ValueRO.ownerNetworkID && bullet.ValueRO.killed)
                             {
                                 healthComponent.ValueRW.kills += 1;
+                                Debug.Log("Adding a kill");
 
                             }
                             if (healthComponent.ValueRO.ownerNetworkID == bullet.ValueRO.hitPlayerNetworkID && healthComponent.ValueRO.CurrentHealth <= 0)
