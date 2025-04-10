@@ -12,7 +12,7 @@ partial class ScoreBoardSystem : SystemBase
     private MultiColumnListView scoreboard;
     private GameObject uiObject;
 
-    PlayerNameManager pNameManager;
+
 
     protected override void OnCreate()
     {
@@ -51,7 +51,6 @@ partial class ScoreBoardSystem : SystemBase
         {
             Debug.Log("No Score UIManager");
         }
-        pNameManager = new PlayerNameManager();
         base.OnCreate();
     }
 
@@ -86,9 +85,9 @@ partial class ScoreBoardSystem : SystemBase
         Entities.ForEach((ref HealthComponent healthComp) =>
         //.WithAll<GhostInstance>().ForEach((ref HealthComponent health, ref GhostOwner ghostOwner, ref GhostOwnerIsLocal gol) =>
         {
-            healthComp.playerName = pNameManager.GetPlayerName();
+
             cnt++;
-            PlayerScore tmp = new PlayerScore(""+healthComp.playerName.ToString(), (int)healthComp.kills, (int)healthComp.deaths);
+            PlayerScore tmp = new PlayerScore(""+healthComp.ownerNetworkID, (int)healthComp.kills, (int)healthComp.deaths);
             scores.Add(tmp);
             
 

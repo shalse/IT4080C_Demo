@@ -53,7 +53,7 @@ partial struct TurretControllerSystem : ISystem
 
             if (!turret.ValueRO.reloading)
             {
-               // Debug.Log("Turret Firing");
+                Debug.Log("Turret Firing");
                 // If already activated, just wait until the delay is over
                 turret.ValueRW.reloadTimer += deltaTime;
 
