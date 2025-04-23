@@ -1,4 +1,5 @@
 using IT4080C;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
@@ -11,17 +12,20 @@ public struct HealthComponent : IComponentData
     [GhostField] public float ownerNetworkID;
     [GhostField] public float kills;
     [GhostField] public float deaths;
+    [GhostField] public FixedString64Bytes playerName;
 }
 
 [DisallowMultipleComponent]
 public class HealthComponentAuthoring : MonoBehaviour
 {
-
+    public string defaultPlayerName = "Unkown";
     class Baker : Baker<HealthComponentAuthoring>
     {
         public override void Bake(HealthComponentAuthoring authoring)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
+            var fixedString = new FixedString64Bytes();
+            fixedString.CopyFrom(authoring.defaultPlayerName);
             AddComponent<HealthComponent>(entity, new HealthComponent
             {
                 CurrentHealth = 100f,
@@ -29,6 +33,7 @@ public class HealthComponentAuthoring : MonoBehaviour
                 ownerNetworkID = 999f,
                 kills = 0,
                 deaths = 0,
+                playerName = fixedString
             });
 
 
