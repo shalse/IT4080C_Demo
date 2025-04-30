@@ -1,0 +1,7 @@
+rep "IT4080C_Demo/IT4080C_Demo@2474156260378@cloud"
+  path "/"
+<<<<<<< HEAD
+    smartbranch "/main" changeset "25"
+=======
+    smartbranch "/main" changeset "24"      
+>>>>>>> 7122016f8c5dd814ae6bd95e13736a206c3c8e35
